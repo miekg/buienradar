@@ -1,14 +1,10 @@
 [Unit]
-Description=Run make.volumes with all the actions: 'create', 'archive', 'permissions', 'size' and 'inventory'
-Wants=cncz-userdb-make.volumes.timer
+Description=Run buienradar
+Wants=buienradar.timer
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/make.volumes --action create
-ExecStart=/usr/local/bin/make.volumes --action archive
-ExecStart=/usr/local/bin/make.volumes --action permissions
-ExecStart=/usr/local/bin/make.volumes --action size
-ExecStart=/usr/local/bin/make.volumes --action inventory
+ExecStart=/usr/bin/buienradar
 
 [Install]
 WantedBy=multi-user.target

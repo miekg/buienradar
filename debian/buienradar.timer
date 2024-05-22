@@ -1,9 +1,10 @@
 [Unit]
-Description=Run make.volumes on volume servers
-Documentation=https://gitlab.science.ru.nl/cncz/userdb-cli
+Description=Run buienradar
+Documentation=https://github.com/miekg/buienradar
 
+# Run every 10m
 [Timer]
-OnCalendar=hourly
+OnCalendar=*:0/10
 
 [Install]
 WantedBy=timers.target
