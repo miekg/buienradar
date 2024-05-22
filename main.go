@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/antchfx/xmlquery"
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,13 +14,11 @@ import (
 	"go.science.ru.nl/promfmt"
 )
 
-// Define the structure based on the XML file
-type Note struct {
-	To      string `xml:"to"`
-	From    string `xml:"from"`
-	Heading string `xml:"heading"`
-	Body    string `xml:"body"`
-}
+var (
+	flagWrite = flag.Bool("w", true, "write to /var/lib/prometheus/node-exporter/f2bne.prom")
+)
+
+const promfile = "/var/lib/prometheus/node-exporter/buienradar.prom"
 
 type Buienradar struct {
 	Name     string
@@ -45,9 +45,14 @@ var (
 		Name: "buienradar_temp_celcius",
 		Help: "The current temperatuur in celcius",
 	}, []string{"name"})
+	buienradarTimestamp = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "buienradar_last_run_time_seconds",
+		Help: "Epoch timestamp of the last run.",
+	})
 )
 
 func main() {
+	flag.Parse()
 	doc, err := xmlquery.LoadURL("http://data.buienradar.nl/1.0/feed/xml")
 	if err != nil {
 		log.Warningf("Error fetching XML %s:", err)
@@ -76,6 +81,13 @@ func main() {
 		buienradarRain.WithLabelValues(br.Name).Set(br.Rain)
 		buienradarTemp.WithLabelValues(br.Name).Set(br.Temp)
 	}
-	bf := promfmt.NewPrefixFilter("buienradar_")
-	promfmt.Fprint(os.Stdout, bf)
+	buienradarTimestamp.Set(float64(time.Now().Unix()))
+
+	if !*flagWrite {
+		promfmt.Fprint(os.Stdout, promfmt.NewPrefixFilter("buienradar_"))
+		return
+	}
+	if err := promfmt.WriteFile(promfile, promfmt.NewPrefixFilter("buienradar_")); err != nil {
+		log.Fatalf("Failed to write to prom file: %s", err)
+	}
 }

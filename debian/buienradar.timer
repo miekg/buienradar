@@ -1,0 +1,9 @@
+[Unit]
+Description=Run make.volumes on volume servers
+Documentation=https://gitlab.science.ru.nl/cncz/userdb-cli
+
+[Timer]
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
