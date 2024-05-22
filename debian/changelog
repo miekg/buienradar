@@ -1,3 +1,9 @@
+buienradar (0.0.3) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Miek Gieben <miek@miek.nl>  Wed, 22 May 2024 20:53:01 +0200
+
 buienradar (0.0.2) unstable; urgency=medium
 
   * New upstream release
