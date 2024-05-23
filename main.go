@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	flagWrite = flag.Bool("w", true, "write to /var/lib/prometheus/node-exporter/f2bne.prom")
+	flagWrite = flag.Bool("w", true, "write to /var/lib/prometheus/node-exporter/buienradar.prom")
 )
 
 const promfile = "/var/lib/prometheus/node-exporter/buienradar.prom"
