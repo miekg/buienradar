@@ -26,6 +26,7 @@ type Buienradar struct {
 	Pressure float64
 	Rain     float64
 	Temp     float64
+	Sun      float64
 }
 
 var (
@@ -44,6 +45,10 @@ var (
 	buienradarTemp = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "buienradar_temp_celcius",
 		Help: "The current temperatuur in celcius",
+	}, []string{"name"})
+	buienradarSun = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "buienradar_sunintensity_wm2",
+		Help: "The current sun intensitiy in W per m^2",
 	}, []string{"name"})
 	buienradarTimestamp = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "buienradar_last_run_time_seconds",
@@ -64,6 +69,7 @@ func main() {
 		pressure, _ := strconv.ParseFloat(xmlquery.Find(station, "luchtdruk/text()")[0].InnerText(), 64)
 		rain, _ := strconv.ParseFloat(xmlquery.Find(station, "regenMMPU/text()")[0].InnerText(), 64)
 		temp, _ := strconv.ParseFloat(xmlquery.Find(station, "temperatuurGC/text()")[0].InnerText(), 64)
+		sun, _ := strconv.ParseFloat(xmlquery.Find(station, "zonintensiteitWM2/text()")[0].InnerText(), 64)
 
 		br := Buienradar{
 			Name:     strings.ToLower(strings.Replace(strings.Replace(xmlquery.Find(station, "stationnaam/text()")[0].InnerText(), "Meetstation ", "", 1), " ", "-", -1)),
@@ -71,6 +77,7 @@ func main() {
 			Pressure: float64(pressure),
 			Rain:     float64(rain),
 			Temp:     float64(temp),
+			Sun:      float64(sun),
 		}
 		brs = append(brs, br)
 	}
@@ -80,6 +87,7 @@ func main() {
 		buienradarPressure.WithLabelValues(br.Name).Set(br.Pressure)
 		buienradarRain.WithLabelValues(br.Name).Set(br.Rain)
 		buienradarTemp.WithLabelValues(br.Name).Set(br.Temp)
+		buienradarSun.WithLabelValues(br.Name).Set(br.Sun)
 	}
 	buienradarTimestamp.Set(float64(time.Now().Unix()))
 
